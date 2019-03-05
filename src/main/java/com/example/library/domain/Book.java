@@ -10,6 +10,8 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.alibaba.fastjson.JSONObject;
+
 @Entity
 public class Book {
 
@@ -19,6 +21,8 @@ public class Book {
 	private String ids;
 	@Column(length=35)
 	private String book_no;
+	@Column(length=35)
+	private String author;
 	@Column(length=100)
 	private String book_name;
 	@Column(length=20)
@@ -33,12 +37,25 @@ public class Book {
 	public Book() {
 		super();
 	}
+	public Book(String json) {
+		super();
+		JSONObject jObject=JSONObject.parseObject(json);
+		this.ids=jObject.getString("ids");
+		this.book_no=jObject.getString("book_no");
+		this.book_name=jObject.getString("book_name");
+		this.author=jObject.getString("author");
+		this.class_number=jObject.getString("class_number");
+		this.publishing_house=jObject.getString("publishing_house");
+		this.published_date=jObject.getString("published_date");
+		this.price=jObject.getDoubleValue("price");
+	}
 	
-	public Book(String ids, String book_no, String book_name, String class_number, String publishing_house,
+	public Book(String ids, String book_no,String author, String book_name, String class_number, String publishing_house,
 			String published_date, double price) {
 		super();
 		this.ids = ids;
 		this.book_no = book_no;
+		this.author = author;
 		this.book_name = book_name;
 		this.class_number = class_number;
 		this.publishing_house = publishing_house;
@@ -86,5 +103,11 @@ public class Book {
 	}
 	public void setPrice(double price) {
 		this.price = price;
+	}
+	public String getAuthor() {
+		return author;
+	}
+	public void setAuthor(String author) {
+		this.author = author;
 	}
 }

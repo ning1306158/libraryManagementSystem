@@ -8,4 +8,10 @@ public interface BookService {
 	
 	List<Book> findAll();
 
+	List<Book> findBook(String json);
+
+	void addBook(String json);
+
+	void delBook(String json);
+
 }

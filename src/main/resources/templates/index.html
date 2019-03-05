@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Insert title here</title>
+		<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+		<!-- 引入样式 -->
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+		<!-- 引入组件库 -->
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+	</head>
+	<body>
+		<div id="app">
+
+			<el-container>
+				<el-header>
+					<el-row :gutter="20">
+						<el-col :span="6">
+							<div class="grid-content bg-purple"></div>
+						</el-col>
+						<el-col :span="2">
+							<div class="grid-content bg-purple">  <el-button type="primary">添加图书</el-button></div>
+						</el-col>
+						<el-col :span="4">
+							<el-form :inline="true">
+								<el-input v-model="input" placeholder="请输入内容"> </el-input>
+							</el-form>
+						</el-col>
+						<el-col :span="4">
+							<el-button type="primary" icon="el-icon-search">搜索</el-button>
+						</el-col>
+					</el-row>
+				</el-header>
+				<el-container>
+					<el-main> <template>
+							<el-table :data="tableData" stripe style="width: 100%">
+								<el-table-column prop="book_name" label="书名" width="180"> </el-table-column>
+								<el-table-column prop="author" label="作者" width="180"> </el-table-column>
+								<el-table-column prop="publishing_house" label="出版社" width="180"> </el-table-column>
+								<el-table-column prop="published_date" label="出版时间" width="180"> </el-table-column>
+								<el-table-column prop="price" label="价格" width="180"> </el-table-column>
+							</el-table>
+						</template> </el-main>
+				</el-container>
+			</el-container>
+
+
+		</div>
+		<script type="text/javascript">
+			new Vue({
+				el: "#app",
+				data: {
+					tableData: [],
+					input: '',
+					form: {
+						book_name: '',
+						publishing_house: '',
+						price: ''
+					}
+				},
+				created: function() {
+					this.getAllBook();
+				},
+				methods: {
+					async getAllBook() {
+						const response = await axios.post('Book');
+						this.tableData=response.data
+						console.log(response.data)
+					},
+					onSubmit() {
+						axios.post("/Book/addBook", this.form)
+					}
+
+				}
+
+			})
+		</script>
+	</body>
+</html>

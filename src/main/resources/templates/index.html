@@ -9,15 +9,25 @@
 		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 		<!-- 引入组件库 -->
 		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<style type="text/css">
+		#index{
+		color: white;
+		font-family: 华文彩云;
+		font-size: 26px
+		}
+		</style>
 	</head>
-	<body>
+	<body style="background: rgb(121, 187, 255);">
+	
+	<img alt="没有图" src="/source/img/1.png">
+	
 		<div id="app">
 
 			<el-container>
 				<el-header>
 					<el-row :gutter="20">
 						<el-col :span="2">
-							<div class="grid-content bg-purple">  <el-button type="primary">添加图书</el-button></div>
+							<div class="grid-content bg-purple" style="padding-top: 10px"> <img alt="" src="img/1/png"> <span id='index'>图书管理</span></div>
 						</el-col>
 						<el-col :span="2">
 							<div class="grid-content bg-purple">  <el-button type="primary">添加图书</el-button></div>

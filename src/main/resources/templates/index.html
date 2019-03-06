@@ -10,84 +10,214 @@
 		<!-- 引入组件库 -->
 		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
 		<style type="text/css">
-		#index{
-		color: white;
-		font-family: 华文彩云;
-		font-size: 26px
-		}
+			#index {
+				color: white;
+				font-family: 华文彩云;
+				font-size: 26px
+			}
 		</style>
 	</head>
 	<body style="background: rgb(121, 187, 255);">
-	
-	<img alt="没有图" src="/source/img/1.png">
-	
+
 		<div id="app">
 
 			<el-container>
 				<el-header>
 					<el-row :gutter="20">
 						<el-col :span="2">
-							<div class="grid-content bg-purple" style="padding-top: 10px"> <img alt="" src="img/1/png"> <span id='index'>图书管理</span></div>
+							<div class="grid-content bg-purple" style="padding-top: 10px; cursor: pointer" @click="getAllBook">
+								<img alt="as " src="/source/img/1.png" width="26px" height="26px">
+								<span id='index'>图书管理</span>
+							</div>
 						</el-col>
 						<el-col :span="2">
-							<div class="grid-content bg-purple">  <el-button type="primary">添加图书</el-button></div>
+							<div class="grid-content bg-purple">
+								<el-button type="primary" @click="dialogVisible=true">添加图书</el-button>
+							</div>
 						</el-col>
 						<el-col :span="2">
-							<div class="grid-content bg-purple">  <el-button type="primary">添加图书</el-button></div>
+							<div class="grid-content bg-purple">
+								<el-button type="primary">添加图书</el-button>
+							</div>
 						</el-col>
 						<el-col :span="2">
-							<div class="grid-content bg-purple">  <el-button type="primary">添加图书</el-button></div>
+							<div class="grid-content bg-purple">
+								<el-button type="primary">添加图书</el-button>
+							</div>
 						</el-col>
 						<el-col :span="4">
-							<el-form :inline="true">
-								<el-input v-model="input" placeholder="请输入内容"> </el-input>
+							<el-form :inline="true" @submit.native.prevent>
+								<el-input v-model="searchForm.key" placeholder="请输入书名或者作者名进行查找" @keyup.enter.native="findBook">
+								</el-input>
 							</el-form>
 						</el-col>
 						<el-col :span="4">
-							<el-button type="primary" icon="el-icon-search">搜索</el-button>
+							<el-button type="primary" icon="el-icon-search" @click="findBook">搜索</el-button>
 						</el-col>
 					</el-row>
 				</el-header>
 				<el-container>
 					<el-main> <template>
 							<el-table :data="tableData" stripe style="width: 100%">
-								<el-table-column prop="book_name" label="书名" width="180"> </el-table-column>
+								<el-table-column prop="bookName" label="书名" width="180"> </el-table-column>
 								<el-table-column prop="author" label="作者" width="180"> </el-table-column>
 								<el-table-column prop="publishing_house" label="出版社" width="180"> </el-table-column>
 								<el-table-column prop="published_date" label="出版时间" width="180"> </el-table-column>
 								<el-table-column prop="price" label="价格" width="180"> </el-table-column>
+								<el-table-column fixed="right" label="操作" width="120"> <template slot-scope="scope">
+										<el-button @click="deleteRow((scope.row).ids)" type="text" size="small">
+											移除 </el-button>
+										<el-button @click="updateBook(scope.row)" type="text" size="small"> 修改</el-button>
+									</template> </el-table-column>
 							</el-table>
 						</template> </el-main>
 				</el-container>
+				<el-footer>
+					<el-pagination background :current-page="currentPage" @current-change="skipPage" layout="prev, pager, next" :total="totelEle">
+					</el-pagination>
+				</el-footer>
 			</el-container>
-
+			<el-dialog title="请填写书的信息" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+				<el-form ref="addbook" :model="form" :rules="rules">
+					<el-form-item label="书名" prop="bookName">
+						<el-input v-model="form.bookName"></el-input>
+					</el-form-item>
+					<el-form-item label="作者" prop="author">
+						<el-input v-model="form.author"></el-input>
+					</el-form-item>
+					<el-form-item label="出版社" prop="publishing_house">
+						<el-input v-model="form.publishing_house"></el-input>
+					</el-form-item>
+					<el-form-item label="出版时间" prop="published_date">
+						<el-input v-model="form.published_date"></el-input>
+					</el-form-item>
+					<el-form-item label="价格" prop="price">
+						<el-input v-model.number="form.price"></el-input>
+					</el-form-item>
+				</el-form> <span slot="footer" class="dialog-footer">
+					<el-button @click="dialogVisible = false">取 消</el-button>
+					<el-button type="primary" @click="addBook">确 定</el-button>
+				</span>
+			</el-dialog>
 
 		</div>
 		<script type="text/javascript">
-			new Vue({
+			var vm = new Vue({
 				el: "#app",
 				data: {
+					totelEle: 10,
+					currentPage: 1,
 					tableData: [],
 					input: '',
 					form: {
-						book_name: '',
+						ids: '',
+						book_no: '',
+						bookName: '',
+						author: '',
+						published_date: '2018-02-03',
 						publishing_house: '',
 						price: ''
+					},
+					searchForm: {
+						key: '',
+						page_size: 10,
+						page_num: 1
+					},
+					dialogVisible: false,
+					rules: {
+						bookName: [{
+							required: true,
+							message: '请输入图书名',
+							trigger: 'blur'
+						}],
+						author: [{
+							required: true,
+							message: '请输入作者',
+							trigger: 'blur'
+						}],
+						publishing_house: [{
+							required: true,
+							message: '请输入出版社',
+							trigger: 'blur'
+						}],
+						published_date: [{
+							required: true,
+							message: '请输入出版日期',
+							trigger: 'blur'
+						}],
+						price: [{
+							required: true,
+							message: '请输入价格',
+							trigger: 'blur'
+						}]
 					}
 				},
 				created: function() {
 					this.getAllBook();
 				},
 				methods: {
-					async getAllBook() {
-						const response = await axios.post('Book');
-						this.tableData=response.data
-						console.log(response.data)
+					getAllBook() {
+						axios.post('Book', this.searchForm).then(res => {
+							console.log(res.data)
+							this.currentPage = res.data.number + 1
+							this.totelEle = res.data.totalElements
+							this.tableData = res.data.content
+						})
+					},
+					findBook() {
+						axios.post('Book/findBook', this.searchForm).then(res => {
+							console.log(res.data)
+							this.currentPage = res.data.number + 1
+							this.totelEle = res.data.totalElements
+							this.tableData = res.data.content
+						})
+					},
+					skipPage(n) {
+						this.searchForm.page_num = n
+						axios.post('Book/findBook', this.searchForm).then(res => {
+							console.log(res.data)
+							this.currentPage = res.data.number + 1
+							this.totelEle = res.data.totalElements
+							this.tableData = res.data.content
+						})
 					},
 					onSubmit() {
 						axios.post("/Book/addBook", this.form)
-					}
+					},
+					handleClose() {
+						this.dialogVisible = false
+					},
+					updateBook(x) {
+						this.dialogVisible = true
+						this.form = x
+						console.log(x)
+					},
+					addBook() {
 
+						this.$refs['addbook'].validate((valid) => {
+							if (valid) {
+								axios.post('Book/addBook', this.form).then(res => {
+									this.getAllBook()
+									this.form = {
+										bookName: '',
+										author: '',
+										published_date: '2018-02-03',
+										publishing_house: '',
+										price: ''
+									}
+								})
+								this.dialogVisible = false
+							} else {
+								console.log('error submit!!');
+								return false;
+							}
+						});
+					},
+					deleteRow(ids) {
+						axios.post('Book/delBook/' + ids).then(res => {
+							this.getAllBook()
+						})
+					}
 				}
 
 			})
